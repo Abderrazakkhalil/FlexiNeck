@@ -156,7 +156,7 @@ Pyramid Output
 Architecture
 ------------
 
-.. image::  _static\WhatsApp Image 2025-05-12 à 16.30.09_e9bba167.jpg
+.. image:: _static/Capture d'écran 2025-05-12 162625.png
    :alt: FlexiNeck Architecture Diagram
    :align: center
 
