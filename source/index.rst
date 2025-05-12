@@ -156,7 +156,7 @@ Pyramid Output
 Architecture
 ------------
 
-.. image:: build/html/_static/sora.png
+.. image:: _static/sora.png
    :alt: FlexiNeck Architecture Diagram
    :align: center
 
