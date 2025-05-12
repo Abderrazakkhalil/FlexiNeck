@@ -1,133 +1,236 @@
-FlexiNeck
-=====================
+====================
+FlexiNeck Documentation
+====================
 
-.. image:: _static/flexineck_logo.png
-   :alt: Logo de FlexiNeck
-   :align: center
-   :width: 400px
+Overview
+--------
 
-|PyPI version| |License| |Python Version| |Documentation Status|
-
-.. |PyPI version| image:: https://img.shields.io/pypi/v/flexineck.svg
-   :target: https://pypi.python.org/pypi/flexineck/
-   :alt: Dernière version PyPI
-
-.. |License| image:: https://img.shields.io/github/license/username/flexineck.svg
-   :target: https://github.com/username/flexineck/blob/main/LICENSE
-   :alt: Licence
-
-.. |Python Version| image:: https://img.shields.io/pypi/pyversions/flexineck.svg
-   :target: https://pypi.python.org/pypi/flexineck/
-   :alt: Versions Python
-
-.. |Documentation Status| image:: https://readthedocs.io/en/latest/?badge=latest
-   :target: https://flexineck.readthedocs.io/en/latest/?badge=latest
-   :alt: État de la documentation
-
-**FlexiNeck** est un module *neck* modulaire et entièrement configurable, conçu pour s'intégrer facilement dans diverses architectures de vision par ordinateur.
-
-Fonctionnalités clés
-==========================
-
-* **Configuration flexible** : Adaptez les composants du neck à votre tâche spécifique.
-* **Polyvalence** : Compatible avec la détection d'objets, la segmentation d'images, la classification, etc.
-* **Modules intégrés** :
-   * FPN (Feature Pyramid Network)
-   * PAN (Path Aggregation Network)
-   * SPP (Spatial Pyramid Pooling)
-   * Mécanismes d'attention : canal, spatial, ou hybride
-   * Méthodes de fusion : simple, pondérée, ou adaptative
-* **Formats de sortie variés** : pyramidal, multi-échelle, ou mono-niveau
+FlexiNeck is a highly configurable neural network neck module designed for computer vision tasks such as object detection, segmentation, and classification. It provides a flexible architecture that can be easily adapted to different backbone networks and task requirements.
 
 Installation
-==========================
+------------
 
 .. code-block:: bash
 
-   pip install flexineck
+   pip install torch
 
-Exemple rapide d’utilisation
-==============================
+Quick Start
+-----------
+
+Basic Usage
+~~~~~~~~~~~
 
 .. code-block:: python
 
-   import torch
    from flexineck import FlexiNeck
 
-   # Dimensions des sorties du backbone (ex. ResNet)
-   in_channels = [256, 512, 1024, 2048]
+   # Define input channels from your backbone network
+   in_channels = [256, 512, 1024, 2048]  # Typical ResNet backbone output
 
-   # Création d'un module FlexiNeck pour la détection
-   neck = FlexiNeck(
+   # Create a neck for object detection
+   neck_detection = FlexiNeck(
        in_channels=in_channels,
        out_channels=256,
        use_fpn=True,
        use_pan=True,
        use_spp=True,
-       attention_type="channel",
-       fusion_type="adaptive",
        output_format="pyramid"
    )
 
-   # Simulation de features en entrée
-   features = [
-       torch.randn(2, 256, 64, 64),
-       torch.randn(2, 512, 32, 32),
-       torch.randn(2, 1024, 16, 16),
-       torch.randn(2, 2048, 8, 8)
-   ]
+Key Features
+------------
 
-   # Passage avant
-   outputs = neck(features)  # Exemple : {'p2': tensor, 'p3': tensor, ...}
+- **Modular Design**: Easily configurable for different vision tasks
+- **Multiple Feature Processing Techniques**:
+  
+  * Feature Pyramid Network (FPN)
+  * Path Aggregation Network (PAN)
+  * Spatial Pyramid Pooling (SPP)
 
-Navigation dans la documentation
-==============================
+- **Attention Mechanisms**:
+  
+  * Channel Attention
+  * Spatial Attention
+  * Hybrid Attention
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Sommaire
+- **Flexible Output Formats**:
+  
+  * Single Output
+  * Multi-scale Output
+  * Pyramid Output
 
-   installation
-   guide_utilisateur
-   architecture
-   api
-   configurations
-   exemples
-   avancé
-   faq
-   contribution
-   changelog
+Configuration Parameters
+-----------------------
 
-Architecture
+Main Parameters
+~~~~~~~~~~~~~~~
+
+.. list-table::
+   :widths: 20 15 50 15
+   :header-rows: 1
+
+   * - Parameter
+     - Type
+     - Description
+     - Default
+   * - ``in_channels``
+     - ``List[int]``
+     - Input channel dimensions from backbone
+     - Required
+   * - ``out_channels``
+     - ``int``
+     - Number of output channels
+     - 256
+   * - ``use_fpn``
+     - ``bool``
+     - Enable Feature Pyramid Network
+     - ``True``
+   * - ``use_pan``
+     - ``bool``
+     - Enable Path Aggregation Network
+     - ``True``
+   * - ``use_spp``
+     - ``bool``
+     - Enable Spatial Pyramid Pooling
+     - ``True``
+   * - ``use_attention``
+     - ``bool``
+     - Enable attention mechanism
+     - ``True``
+   * - ``attention_type``
+     - ``str``
+     - Type of attention ("channel", "spatial", "hybrid")
+     - "channel"
+   * - ``fusion_type``
+     - ``str``
+     - Feature fusion method
+     - "adaptive"
+   * - ``output_format``
+     - ``str``
+     - Output format ("single", "multi_scale", "pyramid")
+     - "multi_scale"
+
+Attention Mechanisms
 -------------------
 
-.. image:: _static/architecture_schema.png
-   :alt: Schéma de l'architecture FlexiNeck
+Channel Attention
+~~~~~~~~~~~~~~~~~
+
+- Learns channel-wise importance
+- Uses both average and max pooling
+- Reduces computational complexity
+
+Spatial Attention
+~~~~~~~~~~~~~~~~~
+
+- Focuses on important spatial regions
+- Combines channel-wise mean and max
+
+Hybrid Attention
+~~~~~~~~~~~~~~~~
+
+- Combines both channel and spatial attention
+- Provides more comprehensive feature refinement
+
+Output Formats
+--------------
+
+Single Output
+~~~~~~~~~~~~~
+
+- Concatenates and processes features into a single tensor
+- Useful for tasks requiring a unified feature representation
+
+Multi-scale Output
+~~~~~~~~~~~~~~~~~~
+
+- Returns features at different scales
+- Preserves multi-resolution information
+
+Pyramid Output
+~~~~~~~~~~~~~~
+
+- Returns a dictionary of features
+- Directly usable in detection frameworks
+
+Architecture
+------------
+
+.. image:: 
+   :alt: FlexiNeck Architecture Diagram
    :align: center
-   :width: 600px
 
-La structure de **FlexiNeck** repose sur une combinaison hiérarchique de modules spécialisés pour la fusion, l’enrichissement et la normalisation des features issues d’un backbone. Chaque composant est optionnel et interchangeable, ce qui permet une grande flexibilité pour répondre aux besoins de chaque tâche de vision.
+Key Components
+~~~~~~~~~~~~~~
 
-.. toctree::
-   :maxdepth: 2
+- **Lateral Convolutions**: Project input features to a consistent channel dimension
+- **Feature Pyramid Network (FPN)**: Top-down pathway for feature enhancement
+- **Path Aggregation Network (PAN)**: Bottom-up pathway for additional feature refinement
+- **Spatial Pyramid Pooling (SPP)**: Multi-scale feature extraction
+- **Attention Modules**: Adaptive feature refinement
+- **Fusion Modules**: Combining features with learnable weights
 
-   architecture/vue_ensemble
-   architecture/fpn
-   architecture/pan
-   architecture/spp
-   architecture/attention
-   architecture/fusion
+Advanced Usage Examples
+----------------------
 
-Et ainsi de suite pour les autres sections (API, Configurations, Exemples…).
+Object Detection Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-À propos
-==========================
+.. code-block:: python
 
-**FlexiNeck** a été conçu pour simplifier l’intégration et l’expérimentation avec des modules *neck* puissants et modernes, tout en maintenant une interface unifiée et intuitive.
+   neck_detection = FlexiNeck(
+       in_channels=[256, 512, 1024, 2048],
+       out_channels=256,
+       use_fpn=True,
+       use_pan=True,
+       use_spp=True,
+       attention_type="channel",
+       output_format="pyramid"
+   )
 
-Indices et tables
-==========================
+Segmentation Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. code-block:: python
+
+   neck_segmentation = FlexiNeck(
+       in_channels=[256, 512, 1024, 2048],
+       out_channels=256,
+       use_fpn=True,
+       use_pan=False,
+       use_spp=True,
+       attention_type="hybrid",
+       output_format="single",
+       output_size=(128, 128)
+   )
+
+Performance Considerations
+-------------------------
+
+- **Computational Overhead**: Additional modules increase computational complexity
+- **Memory Usage**: Multiple attention and fusion modules require more memory
+- **Recommended Hardware**: GPU with sufficient VRAM
+
+Limitations
+-----------
+
+- Requires careful tuning for optimal performance
+- May not be optimal for all vision tasks
+- Performance depends on backbone network
+
+Contributing
+------------
+
+Contributions are welcome! Please submit pull requests or open issues on our GitHub repository.
+
+License
+-------
+
+[Insert your project's license information]
+
+References
+----------
+
+1. Feature Pyramid Networks for Object Detection
+2. Path Aggregation Network for Instance Segmentation
+3. Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition
